@@ -1,0 +1,95 @@
+#!/usr/bin/env python2
+# Name scipt: upsize
+# Release date: 
+# Version: 
+# Copyright (C) Haz | hyphens@pm.me
+
+
+
+from pisi.api import *
+from pisi.util import human_readable_size
+from os.path import basename as b
+from sys import argv
+
+
+ctx = set()
+
+
+def format(pkgname):
+    try:
+        total, cached = calculate_download_size([pkgname])
+    except:
+        total, cached = 0, 0
+    return {pkgname:{"total":total,"cached":cached}}
+
+def glue(dicts):
+    return dict(reduce(lambda n,m:n+m.items(),dicts,[]))
+
+def sifmt(num):
+    if 'h' in ctx:
+        si = human_readable_size(num)
+        return (6, 2) + si
+    else:
+        return (14, 0, num, "B")
+
+def help(n):
+    print b(argv[0])+"\t[-?hst]"\
+            "\n\t-h\thuman-readable numbers" \
+            "\n\t-s\tsort by size, cached always last"\
+            "\n\t-t\tprint total download size"
+    exit(code=n)
+
+set = ctx.add
+
+
+args = {
+    "?": lambda: help(0),
+    "h": lambda: set("h"),
+    "s": lambda: set("s"),
+    "t": lambda: set("t"),
+}
+
+def skey(s): return s[1 if 's' in ctx else 0]
+
+def xor(x, y): return bool(x) ^ bool(y)
+
+def scmp(x, y):
+    if type(x) == str:
+        return cmp(x, y)
+    if not xor(x['cached'], y['cached']):
+        vals = x['total'] - x['cached'], y['total'] - y['cached']
+        return cmp(*vals)
+    if x['cached'] or x['total'] == 0:
+        return -1
+    else:
+        return 1
+
+if __name__ == "__main__":
+
+    for arg in argv[1:]:
+      try:
+        if arg[0] != '-':
+            raise Exception 
+        for c in arg[1:]:
+            args[c]()
+      except:
+        print "Invalid arg."
+        help(1)
+
+    sizes = glue([ format(i) for i in list_upgradable() ])
+    total = sum(i['total'] - i['cached'] for i in sizes.values())
+
+    for k, v in sorted(sizes.items(), key=skey, cmp=scmp, reverse='s' in ctx):
+        fmt = "%-34s" % k
+        if v['total']:
+            fmt += " %*.*f %s" % sifmt(v['total'])
+            fmt += " cached: %*.*f %s" % sifmt(v['cached']) \
+                if v['cached'] else ""
+        else:
+            fmt += " [DEPRECATED]"
+        print fmt
+
+    if 't' in ctx:
+        print
+        print "--------------------------"
+        print "need to download: %*.*f %s" % sifmt(total)
