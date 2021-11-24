@@ -20,5 +20,5 @@ sudo eopkg dc
 sudo eopkg rmo
 sudo journalctl --vacuum-size=64M
 sudo journalctl --vacuum-time=1days
-sudo rm -r ~/.cache/thumbnails/*
+rm -r ~/.cache/thumbnails/*
 sudo usysconf run -f
