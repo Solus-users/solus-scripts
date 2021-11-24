@@ -30,8 +30,8 @@ DRV=$(zenity --list --radiolist --height=300 --width 200 --title="$NAME $VER" --
 PASSWORD=$(zenity --password --title "The Script will now install the driver $DRV, enter your password to proceed")
 
 if [[ $DRV == *"RTL8812au"* ]]; then
-git clone https://github.com/gordboy/rtl8812au-5.9.3.2.git
-cd rtl8812au-5.9.3.2
+git clone https://github.com/morrownr/8812au-20210629
+cd 8812au-20210629
 echo -e "\e[40;38;5;82m Building driver \e[30;48;5;82m\e[0m"
 make
 echo -e "\e[40;38;5;82m Installing driver \e[30;48;5;82m\e[0m"
