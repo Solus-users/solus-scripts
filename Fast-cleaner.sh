@@ -3,7 +3,7 @@
 #  Name scipt: FastCleaner 
 #  Release date: 2021-10-20 
 #  Version: 1.6
-#  Copyright (C) Georgii Bogdanov | GBOG@protonmail.com
+#  Copyright (C) Georgii Bogdanov | gbog@proton.me
 
 set -eu
 
